@@ -17,6 +17,7 @@ declare module "next-auth" {
     user: {
       role?: string;
     } & DefaultSession["user"];
+    
   }
 }
 
@@ -40,6 +41,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (dbUser) {
           token.role = dbUser.role;
+          token.id=dbUser._id
         } else {
           token.role = "user"; // Default fallback
         }

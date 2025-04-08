@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import {connectToDatabase} from "@/lib/db";
 import User from "@/lib/modals/users";
-import { json } from "stream/consumers";
+
 
 async function GET() {
   try {
