@@ -1,37 +1,62 @@
 import { NextResponse } from "next/server";
 import {connectToDatabase} from "@/lib/db";
 import User from "@/lib/modals/users";
+import {Types} from 'mongoose'
 
 
-async function GET() {
+async function GET(request: Request) {
   try {
-    await connectToDatabase(true); // Connect to the database
-    const users = await User.find({}); // Fetch all users from the database
-    return NextResponse.json(users, { status: 200 }); // Return the users as a JSON response
+    await connectToDatabase(true);
+    
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    if(!id){
+      const users = await User.find({});
+      return NextResponse.json(users, { status: 200 });
+    }
+    if(!Types.ObjectId.isValid(id)){
+      return NextResponse.json(
+        { message: "Invalid user ID" },
+        { status: 400 }
+      );
+    }
+    const user = await User.findById(id);
+    if(!user){
+      if (!user) {
+        return NextResponse.json({ message: "User not found" }, { status: 404 });
+      }
+    }
+    return NextResponse.json(user, { status: 200 });
+
+   
   } catch (error) {
     return NextResponse.json(
       { messege: "error getting users", error },
       { status: 500 }
     );
+  }finally{
+    connectToDatabase(false)
   }
 }
 
 
 async function POST(request: Request) {
   try {
-    await connectToDatabase(true); // Connect to the database
-    const body = await request.json(); // Parse the request body as JSON
-    const { name, email, password } = body; // Destructure the user data from the request body
+    await connectToDatabase(true); 
+    const body = await request.json();
+    const { name, email, password, image } = body; 
 
-    const newUser = new User({ name, email, password }); // Create a new user instance
-    await newUser.save(); // Save the new user to the database
+    const newUser = new User({ name, email, password, image }); 
+    await newUser.save(); 
 
-    return NextResponse.json(newUser, { status: 201 }); // Return the newly created user as a JSON response
+    return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { messege: "error creating user", error },
       { status: 500 }
     );
+  }finally{
+    connectToDatabase(false)
   }
 }
 
@@ -56,7 +81,7 @@ async function DELETE(request: Request) {
       { messege: "error deleting user", error },
       { status: 500 }
     );
-  }
+  }finally{connectToDatabase(false)}
 }
 
 
@@ -69,8 +94,8 @@ async function PATCH(request: Request) {
     const updatedUser = await User.findByIdAndUpdate(
       id,
       data,
-      { new: true } // Return the updated user
-    ); // Update the user by ID in the database
+      { new: true }
+    ); 
 
     if (!updatedUser) {
       return NextResponse.json({ messege: "user not found" }, { status: 404 }); // Return a 404 error if the user is not found
@@ -82,10 +107,8 @@ async function PATCH(request: Request) {
       { status: 500 }
     );
   } finally {
-    await connectToDatabase(false); // Disconnect from the database
+    await connectToDatabase(false); 
   }
 }
 
-
-// Export the functions to handle the respective HTTP methods
 export { GET, POST, DELETE, PATCH }; 

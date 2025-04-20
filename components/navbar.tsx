@@ -14,8 +14,8 @@ import {usePathname } from "next/navigation";
 
 const NavBar = () => {
   const pathname =usePathname()
-  const pathSegments = pathname.split('/');
-  const userId = pathSegments[1];
+  // const pathSegments = pathname.split('/');
+  // const userId = pathSegments[1];
   
   const inactiveLink = "flex gap-1  ";
   const activeLink= inactiveLink + 'bg-gray-100 text-gray-500 rounded-l-lg'
@@ -24,19 +24,19 @@ const NavBar = () => {
   return (
     <aside className="pr-0 p-4">    
       <nav>
-        <Link className={pathname.includes('/dashboard')?activeLink: inactiveLink} href={`/${userId}/dashboard`}>
+        <Link className={pathname.includes('/dashboard')?activeLink: inactiveLink} href={`/dashboard`}>
           <IoHomeOutline />
           Dashboard
         </Link>
-        <Link href={`/${userId}/products`} className={pathname.includes('/products')?activeLink:inactiveLink}>
+        <Link href={`products`} className={pathname.includes('/products')?activeLink:inactiveLink}>
         <AiFillProduct />
           Products
         </Link>
-        <Link href={`/${userId}/orders`} className={pathname.includes('/orders')? activeLink: inactiveLink}>
+        <Link href={`orders`} className={pathname.includes('/orders')? activeLink: inactiveLink}>
         <FaBagShopping />
           Orders
         </Link>
-        <Link href={`/${userId}/settings`} className={pathname.includes('/settings')? activeLink: inactiveLink}>
+        <Link href={`/settings`} className={pathname.includes('/settings')? activeLink: inactiveLink}>
         <IoSettingsOutline />
           Settings
         </Link>

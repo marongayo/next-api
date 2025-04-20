@@ -1,15 +1,21 @@
 // lib/db.ts
 import mongoose from "mongoose";
-import { MongoClient, ServerApiVersion } from "mongodb";
 
-let dbConnection: boolean = false;
-
+const MONGODB_URI = process.env.MONGODB_URI;
 
 
-if (!process.env.MONGODB_URI) {
+
+if (!MONGODB_URI) {
     throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
   }
-const MONGODB_URI = process.env.MONGODB_URI;
+
+const checkConnection = function(){
+    const connected =  mongoose.connection.readyState;
+    return connected===1
+}
+
+let dbConnection: boolean=checkConnection()
+
 
 const connectToDatabase = async (connect: boolean) => {
     if (connect && !dbConnection) {
